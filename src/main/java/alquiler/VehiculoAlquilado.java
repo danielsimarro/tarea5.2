@@ -6,6 +6,7 @@
 package alquiler;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Objects;
 
 /**
@@ -100,5 +101,4 @@ public class VehiculoAlquilado {
         return true;
     }
 
-    
 }

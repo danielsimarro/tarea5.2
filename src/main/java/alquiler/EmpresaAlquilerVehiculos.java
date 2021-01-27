@@ -5,6 +5,8 @@
  */
 package alquiler;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,7 +16,7 @@ import java.util.Comparator;
  * @author daniel
  */
 public class EmpresaAlquilerVehiculos {
-    
+
     //Atributos de la empresa
     private String cif;
     private String nombre;
@@ -28,7 +30,7 @@ public class EmpresaAlquilerVehiculos {
     //Atributo con la lista de los vehiculos alquilados que hay, donde
     //cada posición se almacenaran los datos de esos vehiculos alquilados
     private ArrayList<VehiculoAlquilado> listaAlquiler;
-    
+
     //Constructor donde se le pasan los parametros y se iicializa el arraylist de las listas
     public EmpresaAlquilerVehiculos(String cif, String nombre, String paginaWeb) {
         this.cif = cif;
@@ -87,51 +89,114 @@ public class EmpresaAlquilerVehiculos {
     public void setListaAlquiler(ArrayList<VehiculoAlquilado> listaAlquiler) {
         this.listaAlquiler = listaAlquiler;
     }
-    
-    
+
     //Metodo para registrar un nuevo cliente
-    public void registrarCliente(Cliente nuevo){
+    public void registrarCliente(Cliente nuevo) {
         listaCliente.add(nuevo);
     }
-    
+
     //Metodo para buscar un cliente con binarysearch
     //Antes crearemos un metodo privado para oredenar 
     //ya que si no, no se podra realizar la busqueda
-    private void ordendarCliente(){
-        Comparator <Cliente> criterio = (c1, c2) -> c1.getNombre().compareTo(c2.getNombre());
+    private void ordendarCliente() {
+        Comparator<Cliente> criterio = (c1, c2) -> c1.getNif().compareTo(c2.getNif());
         Collections.sort(listaCliente, criterio);
     }
-    
-    public int buscarCliente(Cliente c){
+
+    public int buscarCliente(Cliente c) {
         this.ordendarCliente();
-        
-        return Collections.binarySearch(listaCliente,c,(c1, c2) -> c1.getNombre().compareTo(c2.getNombre()));
+
+        return Collections.binarySearch(listaCliente, c, (c1, c2) -> c1.getNif().compareTo(c2.getNif()));
     }
-    
+
     //Metodo para imprimir cliente
-    public void imprimirListaCliente(){
+    public void imprimirListaCliente() {
         listaCliente.forEach(System.out::println);
     }
-    
+
     //Metodo para registrar un nuevo vehiculo
-    public void registrarvehiculo(Vehiculo nuevo){
+    public void registrarVehiculo(Vehiculo nuevo) {
         listaVehiculo.add(nuevo);
     }
-    
+
     //Metodo para buscar un vehiculo con binarysearch
     //Antes crearemos un metodo privado para oredenar 
     //ya que si no, no se podra realizar la busqueda
-    private void ordendarvehiculo(){
-        Comparator <Vehiculo> criterio = (c1, c2) -> c1.getMarca().compareTo(c2.getMarca());
+    private void ordendarVehiculo() {
+        Comparator<Vehiculo> criterio = (c1, c2) -> c1.getMatricula().compareTo(c2.getMatricula());
         Collections.sort(listaVehiculo, criterio);
     }
-    
-    public int buscarVehiculo(Vehiculo v){
-        this.ordendarvehiculo();
-        return Collections.binarySearch(listaVehiculo,v,(c1, c2) -> c1.getMarca().compareTo(c2.getMarca()));
+
+    public int buscarVehiculo(Vehiculo v) {
+        this.ordendarVehiculo();
+        return Collections.binarySearch(listaVehiculo, v, (c1, c2) -> c1.getMatricula().compareTo(c2.getMatricula()));
     }
-    
+
     //Metodo para imprimir vehiculo
-    
-    
+    public void imprimirvehiculo() {
+        listaVehiculo.forEach(System.out::println);
+    }
+    //Metodo para alquilar vehiculo
+    public boolean alquilerVehiculo(Cliente c, Vehiculo v, int dias) {
+        // busca el cliente a partir del nif
+        Cliente cliente = cogerCliente(buscarCliente(c));
+        // busca el vehiculo a partir de la marticula
+        Vehiculo vehiculo = cogerVehiculo(buscarVehiculo(v));
+
+        if (cliente != null && vehiculo != null) {
+            if (vehiculo.isDisponible()) {
+                vehiculo.setDisponible(false);
+                this.listaAlquiler.add(new VehiculoAlquilado(cliente, vehiculo,
+                        LocalDate.now(), dias));
+
+                return true; // El alquiler se realiza correctamente
+            }
+        }
+        return false; // No se puede alquilar el vehiculo por el cliente
+    }
+
+    //Metodo para devolver un cliente pasandole la posicion
+    private Cliente cogerCliente(int posicion) {
+        if (posicion >= 0 && posicion < listaCliente.size()) {
+            return listaCliente.get(posicion);
+        } else {
+            return null;
+        }
+    }
+    //Metodo para devolver un vehiculo pasandole la posicion
+    private Vehiculo cogerVehiculo(int posicion) {
+        if (posicion >= 0 && posicion < listaVehiculo.size()) {
+            return listaVehiculo.get(posicion);
+        } else {
+            return null;
+        }
+    }
+
+    public void recibirVehiculo(Vehiculo v) {
+        Vehiculo vehiculo = cogerVehiculo(buscarVehiculo(v));
+        if (vehiculo != null) {
+            vehiculo.setDisponible(true);
+            listaAlquiler.remove(v);
+
+        }
+
+    }
+
+    public void imprimirListaVehiculosAlquilados() {
+        listaAlquiler.forEach(System.out::println);
+    }
+
+    public void imprimirMatriculaFecha() {
+        for (int i = 0; i < listaAlquiler.size(); i++) {
+            System.out.println("La matricula es: " + listaAlquiler.get(i).getVehiculo().getMatricula() + "y la fecha de entrega es "
+                    + entregaVehiculos(listaAlquiler.get(i)));
+        }
+    }
+
+    //Metodo para averiguar la fecha que hay que devolver el vehiculo
+    private LocalDate entregaVehiculos(VehiculoAlquilado v) {
+        LocalDate fechaAlquiler = v.getFechaAlquiler().plus(v.getTotalDiasAlquiler(), ChronoUnit.DAYS);
+        return fechaAlquiler;
+    }
+
 }
