@@ -33,7 +33,7 @@ public class EmpresaAlquilerVehiculos {
 
     //Constructor donde se le pasan los parametros y se iicializa el arraylist de las listas
     
-    //Cuando es static todas las empresas com
+    //Cuando es static todas las empresas commparten los mismos clientes 
     public EmpresaAlquilerVehiculos(String cif, String nombre, String paginaWeb) {
         this.cif = cif;
         this.nombre = nombre;
