@@ -32,6 +32,8 @@ public class EmpresaAlquilerVehiculos {
     private ArrayList<VehiculoAlquilado> listaAlquiler;
 
     //Constructor donde se le pasan los parametros y se iicializa el arraylist de las listas
+    
+    //Cuando es static todas las empresas com
     public EmpresaAlquilerVehiculos(String cif, String nombre, String paginaWeb) {
         this.cif = cif;
         this.nombre = nombre;
@@ -106,7 +108,7 @@ public class EmpresaAlquilerVehiculos {
     public int buscarCliente(Cliente c) {
         this.ordendarCliente();
 
-        return Collections.binarySearch(listaCliente, c, (c1, c2) -> c1.getNif().compareTo(c2.getNif()));
+        return Collections.binarySearch(listaCliente, c , (c1, c2) -> c1.getNif().compareTo(c2.getNif()));
     }
 
     //Metodo para imprimir cliente
@@ -122,7 +124,7 @@ public class EmpresaAlquilerVehiculos {
     //Metodo para buscar un vehiculo con binarysearch
     //Antes crearemos un metodo privado para oredenar 
     //ya que si no, no se podra realizar la busqueda
-    private void ordendarVehiculo() {
+    public void ordendarVehiculo() {
         Comparator<Vehiculo> criterio = (c1, c2) -> c1.getMatricula().compareTo(c2.getMatricula());
         Collections.sort(listaVehiculo, criterio);
     }
@@ -176,7 +178,8 @@ public class EmpresaAlquilerVehiculos {
         Vehiculo vehiculo = cogerVehiculo(buscarVehiculo(v));
         if (vehiculo != null) {
             vehiculo.setDisponible(true);
-            listaAlquiler.remove(v);
+            
+            /*Yo quiero quitar el objeto de la lista*/
 
         }
 
