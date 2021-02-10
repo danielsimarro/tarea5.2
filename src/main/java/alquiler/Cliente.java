@@ -13,6 +13,7 @@ import java.util.Objects;
  */
 public class Cliente {
 
+    
     private String nif;
     private String nombre;
     private String apellidos;
