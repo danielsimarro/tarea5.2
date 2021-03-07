@@ -3,24 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package alquiler;
+package PracticaAlquiler;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import static java.time.temporal.ChronoUnit.DAYS;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Scanner;
 
 /**
  *
- * @author daniel
+ * @author NitroPc
  */
-public class EmpresaAlquilerVehiculos {
-
+public class EmpresaAlquilerVehiculo {
     //Atributos de la empresa
+
     private String cif;
     private String nombre;
     private String paginaWeb;
@@ -39,7 +37,7 @@ public class EmpresaAlquilerVehiculos {
 
     //Constructor donde se le pasan los parametros y se iicializa el arraylist de las listas
     //Cuando es static todas las empresas commparten los mismos clientes 
-    public EmpresaAlquilerVehiculos(String cif, String nombre, String paginaWeb) {
+    public EmpresaAlquilerVehiculo(String cif, String nombre, String paginaWeb) {
         this.cif = cif;
         this.nombre = nombre;
         this.paginaWeb = paginaWeb;
@@ -118,12 +116,12 @@ public class EmpresaAlquilerVehiculos {
         Comparator<Cliente> criterio = (c1, c2) -> c1.getNif().compareTo(c2.getNif());
         Collections.sort(listaCliente, criterio);
     }
-    
+
     public void ordendarClienteNombre() {
         Comparator<Cliente> criterio = (c1, c2) -> c1.getNombre().compareTo(c2.getNombre());
         Collections.sort(listaCliente, criterio);
     }
-    
+
     public int buscarCliente(Cliente c) {
         this.ordendarClienteNif();
 
@@ -147,9 +145,9 @@ public class EmpresaAlquilerVehiculos {
         Comparator<Vehiculo> criterio = (c1, c2) -> c1.getMatricula().compareTo(c2.getMatricula());
         Collections.sort(listaVehiculo, criterio);
     }
-    
+
     public void ordendarVehiculoTarifa() {
-        Comparator <Vehiculo> criterio = (c1, c2) -> (int) (c1.getTarifa()- c2.getTarifa());
+        Comparator<Vehiculo> criterio = (c1, c2) -> (int) (c1.getTarifa() - c2.getTarifa());
         Collections.sort(listaVehiculo, criterio);
     }
 
@@ -164,31 +162,28 @@ public class EmpresaAlquilerVehiculos {
     }
 
     //Metodo para alquilar vehiculo
-    public boolean alquilerVehiculo(Cliente c, Vehiculo v, int dias) {
-        // busca el cliente a partir del nif
+    public boolean alquilervehiculo(Cliente c, Vehiculo v, int dias) {
+
         Cliente cliente = cogerCliente(buscarCliente(c));
-        // busca el vehiculo a partir de labuscarVe marticula
         Vehiculo vehiculo = cogerVehiculo(buscarVehiculo(v));
 
-        if (cliente != null && vehiculo != null) {
+        if (vehiculo != null && cliente != null) {
             if (vehiculo.isDisponible()) {
                 vehiculo.setDisponible(false);
-                this.listaAlquiler.add(new VehiculoAlquilado(cliente, vehiculo,
-                        fechaDeAlquiler(), dias));
-
-                return true; // El alquiler se realiza correctamente
+                listaAlquiler.add(new VehiculoAlquilado(cliente, vehiculo, LocalDate.now(), dias));
+                return true;
             }
         }
-        return false; // No se puede alquilar el vehiculo por el cliente
+        return false;
     }
 
-    //Metodo para devolver un cliente pasandole la posicion
-    private Cliente cogerCliente(int posicion) {
+    public Cliente cogerCliente(int posicion) {
         if (posicion >= 0 && posicion < listaCliente.size()) {
             return listaCliente.get(posicion);
         } else {
             return null;
         }
+
     }
 
     //Metodo para devolver un vehiculo pasandole la posicion
@@ -200,48 +195,28 @@ public class EmpresaAlquilerVehiculos {
         }
     }
 
-    public void recibirVehiculo(Vehiculo v) {
+    public void recibirvehiculo(Vehiculo v) {
         Vehiculo vehiculo = cogerVehiculo(buscarVehiculo(v));
         if (vehiculo != null) {
             vehiculo.setDisponible(true);
-
-            /*Yo quiero quitar el objeto de la lista*/
         }
-
     }
-
-    public void imprimirListaVehiculosAlquilados() {
+    
+    public void imprimirAlquileres (){
         listaAlquiler.forEach(System.out::println);
     }
-
-    public void imprimirMatriculaFecha() {
-        for (int i = 0; i < listaAlquiler.size(); i++) {
-            System.out.println("La matricula es: " + listaAlquiler.get(i).getVehiculo().getMatricula() + "y la fecha de entrega es "
-                    + entregaVehiculos(listaAlquiler.get(i)));
+    
+    public void impirmirmaticulo(){
+        for(int i = 0; i<listaAlquiler.size();i++){
+            System.out.println("La matricula es " + listaAlquiler.get(i).getVehiculo().getMatricula() + " y la fecha de entrega es " + 
+                    entregaVehiculo(listaAlquiler.get(i)));
         }
     }
-
-    //Metodo para averiguar la fecha que hay que devolver el vehiculo
-    private LocalDate entregaVehiculos(VehiculoAlquilado v) {
-        LocalDate fechaAlquiler = v.getFechaAlquiler().plus(v.getTotalDiasAlquiler(), ChronoUnit.DAYS);
-        return fechaAlquiler;
+    
+    public LocalDate entregaVehiculo(VehiculoAlquilado v){
+        return v.getFechaAlquiler().plus(v.getTotalDiasAlquiler(), ChronoUnit.DAYS);
     }
-
-    //Metodo para poder establecer la fecha en la que se quiere 
-    //alquilar el vehiculo
-    private static LocalDate fechaDeAlquiler() {
-        Scanner teclado = new Scanner(System.in);
-        String fechaTexto;
-
-        System.out.println("Introduce la fecha en la que quieres alquilar el vehiculo (dd/MM/yyyy)");
-        DateTimeFormatter fechaHora = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        fechaTexto = teclado.nextLine();
-        LocalDate fecha = LocalDate.from(fechaHora.parse(fechaTexto));
-
-        return fecha;
-
-    }
-
+    
     public void finalizarAlquiler(VehiculoAlquilado alquiler) {
 
         listaAlquilerFinalizada.add(alquiler);
@@ -251,62 +226,8 @@ public class EmpresaAlquilerVehiculos {
         
         //Calcular los dias reales
         
-        System.out.println("Los dias que se a alquilado el vehiculo son de: " + diasReales(alquiler));
         
         
 
     }
-    
-    public int diasReales(VehiculoAlquilado a){
-        long diasEntrehoy = ChronoUnit.DAYS.between(a.getFechaAlquiler(), LocalDate.now());
-        return (int) diasEntrehoy;
-    }
-
-    private void ordendarAlquilerNif() {
-        Comparator<VehiculoAlquilado> criterio = (c1, c2) -> c1.getCliente().getNif().compareTo(c2.getCliente().getNif());
-        Collections.sort(listaAlquiler, criterio);
-    }
-    
-    public void ordendarAlquilerFecha() {
-        Comparator<VehiculoAlquilado> criterio = (c1, c2) -> c1.getFechaAlquiler().compareTo(c2.getFechaAlquiler());
-        Collections.sort(listaAlquiler, criterio);
-    }
-    
-    public void ordendarAlquilerMatricula() {
-        Comparator<VehiculoAlquilado> criterio = (c1, c2) -> c1.getVehiculo().getMatricula().compareTo(c2.getVehiculo().getMatricula());
-        Collections.sort(listaAlquiler, criterio);
-    }
-
-    public int buscarAlquiler(VehiculoAlquilado c) {
-        this.ordendarAlquilerNif();
-
-        return Collections.binarySearch(listaAlquiler, c, (c1, c2) -> c1.getCliente().getNif().compareTo(c2.getCliente().getNif()));
-    }
-
-    public ArrayList busquedaAlquiler(Cliente c) {
-        
-        ArrayList<VehiculoAlquilado> lista = new ArrayList<>();
-
-        for (int i = 0; i < listaAlquiler.size(); i++) {
-            if (listaAlquiler.get(i).getCliente().getNif().equals(c.getNif())) {
-                lista.add(listaAlquiler.get(i));
-            }
-        }
-
-        return lista;
-    }
-
-    public void impimirAlquilerFinalizado() {
-        DateTimeFormatter fechaHora = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        for (int i = 0; i < listaAlquilerFinalizada.size(); i++) {
-            long numeroDias = DAYS.between(listaAlquilerFinalizada.get(i).getFechaAlquiler(),entregaVehiculos(listaAlquilerFinalizada.get(i)));
-            System.out.println("Nif Cliente: " + listaAlquilerFinalizada.get(i).getCliente().getNif()
-                    + " Matricula Vehic: " + listaAlquilerFinalizada.get(i).getVehiculo().getMatricula()
-                    + " Desde el: " + listaAlquilerFinalizada.get(i).getFechaAlquiler().format(fechaHora)
-                    + " hasta: " + entregaVehiculos(listaAlquilerFinalizada.get(i)).format(fechaHora) + " Ganancia: "
-                    + numeroDias*listaAlquilerFinalizada.get(i).getVehiculo().getTarifa());
-        }
-
-    }
-
 }
